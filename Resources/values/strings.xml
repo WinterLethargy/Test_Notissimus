@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Test_Notissimus</string>
+    <string name="action_settings">Settings</string>
+	<string name="offers">Offers:</string>
+	<string name="offer">Offer</string>
+	<string name="back">Назад</string>
+</resources>
