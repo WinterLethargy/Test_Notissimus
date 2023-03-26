@@ -11,7 +11,7 @@ namespace Test_Notissimus
 		private MvxListView OffersListView => _offersListView ?? (_offersListView = FindViewById<MvxListView>(Resource.Id.Offers));
 		private MvxListView _offersListView;
 
-		protected override async void OnCreate(Bundle savedInstanceState)
+		protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 			SetContentView(Resource.Layout.activity_main);

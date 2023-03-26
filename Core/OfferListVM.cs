@@ -17,18 +17,24 @@ namespace Test_Notissimus
 
 		public MvxObservableCollection<string> OfferIds { get; } = new MvxObservableCollection<string>();
 		private ICommand _showOfferCommand;
-		public ICommand ShowOfferCommand => _showOfferCommand ?? (_showOfferCommand = new MvxAsyncCommand<string>(ShowOffer));
+		public ICommand ShowOfferCommand => _showOfferCommand ?? (_showOfferCommand = new MvxAsyncCommand<string>(ShowOfferAsync));
 
 		public OfferListVM(IOfferWebProvider offerWedProvider, IMvxNavigationService navigationService)
 		{
 			_offerWebProvider = offerWedProvider;
 			_navigationService = navigationService;
 		}
-
 		public async override Task Initialize()
 		{
 			await base.Initialize();
-
+			await UpdateOfferIdsAsync();
+		}
+		private Task UpdateOfferIdsAsync()
+		{
+			return Task.Run(UpdateOfferIds);
+		}
+		private async Task UpdateOfferIds()
+		{
 			_offerList = await _offerWebProvider.GetOffersXml();
 
 			var offers = _offerList.SelectNodes("//offer");
@@ -36,18 +42,20 @@ namespace Test_Notissimus
 								 .Select(of => of.Attributes["id"].Value)
 								 .ToArray();
 
+			OfferIds.Clear();
 			OfferIds.AddRange(offerIds);
 		}
-		public Task ShowOffer(string offerId)
+		private Task ShowOfferAsync(string offerId)
 		{
-			return Task.Run(async () =>
-			{
-				var idNum = int.Parse(offerId);
-				var offerJson = GetOfferJson(idNum);
-				await _navigationService.Navigate<OfferVM, string>(offerJson);
-			});
+			return Task.Run(() => ShowOffer(offerId));
 		}
-		public string GetOfferJson(int id)
+		private void ShowOffer(string offerId)
+		{
+			var idNum = int.Parse(offerId);
+			var offerJson = GetOfferJson(idNum);
+			_navigationService.Navigate<OfferVM, string>(offerJson);
+		}
+		private string GetOfferJson(int id)
 		{
 			var offerXml = _offerList.SelectSingleNode($"//offer[@id=\"{id}\"]");
 

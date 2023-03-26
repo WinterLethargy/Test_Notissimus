@@ -1,4 +1,5 @@
-﻿using MvvmCross.Commands;
+﻿using Java.Lang;
+using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 using Newtonsoft.Json.Linq;
@@ -39,7 +40,7 @@ namespace Test_Notissimus
 		}
 
 		private ICommand _backCommand;
-		public ICommand BackCommand => _backCommand ?? (_backCommand = new MvxAsyncCommand(Back));
+		public ICommand BackCommand => _backCommand ?? (_backCommand = new MvxAsyncCommand(BackAsync));
 
 		public OfferVM(IMvxNavigationService navigationService)
 		{
@@ -48,12 +49,24 @@ namespace Test_Notissimus
 
 		public override void Prepare(string offerJson)
 		{
-			var offerJObjeck = JObject.Parse(offerJson);
-			var id = offerJObjeck["offer"]["@id"].Value<string>();
-			Title = $"Offer {id}";
 			OfferJson = offerJson;
 		}
-		public Task Back()
+		public override async Task Initialize()
+		{
+			await base.Initialize();
+			await InitTitleAsync();
+		}
+		private Task InitTitleAsync()
+		{
+			return Task.Run(InitTitle);
+		}
+		private void InitTitle() 
+		{
+			var offerJObject = JObject.Parse(OfferJson);
+			var id = offerJObject["offer"]["@id"].Value<string>();
+			Title = $"Offer {id}";
+		}
+		private Task BackAsync()
 		{
 			return Task.Run(() => _navigationService.Close(this));
 		}
