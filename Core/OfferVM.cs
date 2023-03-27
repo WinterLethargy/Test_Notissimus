@@ -10,6 +10,7 @@ namespace Test_Notissimus
 {
 	public class OfferVM : MvxViewModel<string>
 	{
+		private string _tempRefOfferJson;
 		IMvxNavigationService _navigationService;
 
 		private string _title;
@@ -49,7 +50,7 @@ namespace Test_Notissimus
 
 		public override void Prepare(string offerJson)
 		{
-			OfferJson = offerJson;
+			_tempRefOfferJson = offerJson;
 		}
 		public override async Task Initialize()
 		{
@@ -60,11 +61,21 @@ namespace Test_Notissimus
 		{
 			return Task.Run(InitTitle);
 		}
-		private void InitTitle() 
+		private void InitTitle()
 		{
-			var offerJObject = JObject.Parse(OfferJson);
-			var id = offerJObject["offer"]["@id"].Value<string>();
-			Title = $"Offer {id}";
+			try
+			{
+				var offerJObject = JObject.Parse(_tempRefOfferJson);
+				var id = offerJObject["offer"]["@id"].Value<string>();
+
+				Title = $"Offer {id}";
+				OfferJson = _tempRefOfferJson;
+			}
+			catch (System.Exception)
+			{
+				Title = "Ошибка";
+				OfferJson = "Неправильно сформатированный Json";
+			}
 		}
 		private Task BackAsync()
 		{

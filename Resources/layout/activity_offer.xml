@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/OfferJson" 
             app:MvxBind="Text OfferJson, 
-                              Mode=OneTime"/>
+                              Mode=OneWay"/>
         <Button
             android:text="@string/back"
             android:layout_width="match_parent"
